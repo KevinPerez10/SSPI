@@ -23,7 +23,7 @@ export default function SignIn() {
     return (
         <div className='grid place-items-center gap-10'>
             <header className='text-3xl'>
-                React + Firebase Chat
+                Welcome user
             </header>
             <button
                 className='flex items-center gap-2 border-2 rounded-full px-4 py-3 hover:scale-105 transition-all'
@@ -34,9 +34,6 @@ export default function SignIn() {
                 </div>
                 Sign in with Google
             </button>
-            <div className='text-center'>
-                Do not violate the community guidelines or you will be banned for life!
-            </div>
         </div>
     )
 }

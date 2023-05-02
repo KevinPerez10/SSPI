@@ -27,10 +27,8 @@ function App() {
   const [user] = useAuthState(auth)
 
   return (
-    <div>
-      <main>
-        {user ? <Home/> : <SignIn/>}
-
+    <div className='bg-stone-400 h-screen w-full flex justify-center items-center'>
+      <main className='h-full w-full grid place-items-center'>
         <section>
           {user ?
             <div className='ml-auto flex items-center gap-2'>
@@ -42,8 +40,10 @@ function App() {
               </div>
             </div>
           : null
-          }
+        }
         </section>
+        
+        {user ? <Home/> : <SignIn/>}
       </main>
     </div>
   )
