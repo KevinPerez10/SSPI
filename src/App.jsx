@@ -3,6 +3,7 @@ import './App.css'
 import SignIn from './components/authentication/SignIn'
 import SignOut from './components/authentication/SignOut'
 import Home from './components/pages/Home'
+import Menu from './components/pages/Menu'
 
 import { initializeApp } from 'firebase/app'
 import { getFirestore } from 'firebase/firestore'
@@ -28,10 +29,16 @@ function App() {
 
   return (
     <div className='bg-stone-400 h-screen w-full flex justify-center items-center'>
-      <main className='h-full w-full grid place-items-center'>
-        <section>
+      <main className='h-full w-full flex flex-col items-center justify-center'>
+        <section className='bg-stone-500 w-full'>
           {user ?
-            <div className='ml-auto flex items-center gap-2'>
+            <div className='flex items-center justify-center mx-3 my-2 gap-2'>
+              <div className='mr-auto'>
+                <Menu/>
+              </div>
+              <p>
+                Hello, {localStorage.getItem('name')}!
+              </p>
               <div className=''>
                 <img className='rounded-full w-10' src={localStorage.getItem('profilePic')} alt="" />
               </div>
@@ -40,7 +47,7 @@ function App() {
               </div>
             </div>
           : null
-        }
+          }
         </section>
         
         {user ? <Home/> : <SignIn/>}

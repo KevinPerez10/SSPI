@@ -12,7 +12,9 @@
   "dependencies": {
     "@fullcalendar/core": "^6.1.6",
     "@fullcalendar/daygrid": "^6.1.6",
+    "@fullcalendar/interaction": "^6.1.6",
     "@fullcalendar/react": "^6.1.6",
+    "@fullcalendar/timegrid": "^6.1.6",
     "@syncfusion/ej2-react-schedule": "^21.1.41",
     "firebase": "^9.21.0",
     "react": "^18.2.0",

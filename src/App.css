@@ -25,3 +25,15 @@ body {
 	margin: 0;
 	font-family: 'Poppins', Arial, Helvetica, sans-serif;
 }
+
+/* Fullcalendar stylings */
+
+.fc-button {
+	background-color: #A8A29E !important;
+	border: none !important;
+}
+
+.fc-button:hover {
+	cursor: pointer;
+	background-color: #78716C !important;
+}
