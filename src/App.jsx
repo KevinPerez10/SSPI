@@ -32,7 +32,7 @@ function App() {
       <main className='h-full w-full flex flex-col items-center justify-center'>
         <section className='bg-stone-500 w-full'>
           {user ?
-            <div className='flex items-center justify-center mx-3 my-2 gap-2'>
+            <div className='text-white flex items-center justify-center mx-3 my-2 gap-2'>
               <div className='mr-auto'>
                 <Menu/>
               </div>

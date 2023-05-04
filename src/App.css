@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 @font-face {
 	font-family: 'gilmer';
 	src: url('/fonts/Gilmer-Bold.otf');
@@ -36,4 +37,13 @@ body {
 .fc-button:hover {
 	cursor: pointer;
 	background-color: #78716C !important;
+}
+
+.fc-day:hover {
+	background-color: #A8A29E;
+	cursor: pointer;
+}
+
+.fc-event, .fc-daygrid-day-events {
+	background-color: skyblue !important;
 }

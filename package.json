@@ -10,12 +10,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.10.8",
+    "@emotion/styled": "^11.10.8",
     "@fullcalendar/core": "^6.1.6",
     "@fullcalendar/daygrid": "^6.1.6",
     "@fullcalendar/interaction": "^6.1.6",
     "@fullcalendar/react": "^6.1.6",
     "@fullcalendar/timegrid": "^6.1.6",
-    "@syncfusion/ej2-react-schedule": "^21.1.41",
+    "@mui/material": "^5.12.3",
+    "@mui/x-date-pickers": "^6.3.0",
+    "dayjs": "^1.11.7",
     "firebase": "^9.21.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
