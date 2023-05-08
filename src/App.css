@@ -30,18 +30,27 @@ body {
 /* Fullcalendar stylings */
 
 .fc-button {
-	background-color: #A8A29E !important;
+	background-color: #374151 !important;
 	border: none !important;
 }
 
 .fc-button:hover {
 	cursor: pointer;
-	background-color: #78716C !important;
+	background-color: #374151 !important;
 }
 
 .fc-day:hover {
-	background-color: #A8A29E;
+	background-color: #7B818D;
 	cursor: pointer;
+}
+
+.fc-daygrid-day-frame:hover {
+	color: white;
+}
+
+.fc-day-today {
+	background-color: #7B818D !important;
+	color: white;
 }
 
 .fc-event, .fc-daygrid-day-events {

@@ -26,56 +26,46 @@ import '../../../App.css'
 
 export default function Calendar() {
     
-    //fullcalendar functions
-    const [events, setEvents] = useState([
-        {
-            id: '1',
-            title: 'Event 1',
-            start: '2023-05-05T10:00:00',
-            end: '2023-05-05T12:00:00'
-        },
-        {
-            id: '2',
-            title: 'Event 2',
-            start: '2023-05-05T14:00:00',
-            end: '2023-05-05T16:00:00'
-        },
-    ])
+    //FULLCALENDAR FUNCTIONS
+    // const eventsList = {
+    //     title: 'Event 1',
+    //     start: '2023-05-05T10:00:00',
+    //     end: '2023-05-05T12:00:00'
+    // }
 
-    const handleEventAdd = ({ newEvent }) => {
-        setEvents([...events, newEvent])
-    }
+    // const eventsList = 
+    //     {
+    //         title: 'Event 1',
+    //         start: '2023-05-05T10:00:00',
+    //         end: '2023-05-05T12:00:00'
+    //     }
 
-    const handleEventChange = ({ event }) => {
-        const index = events.findIndex((e) => e.id === event.id)
-        const newEvents = [...events]
-        newEvents[index] = event
-        setEvents(newEvents)
-    }
+    // const addEvent = async (event) => {
+    //     try {
+    //         await addDoc(collection(db, 'events'), {
+    //             title: event.title,
+    //             start: event.start,
+    //             end: event.end,
+    //             createdBy: auth.currentUser.uid
+    //         })
+    //         console.log('Event added successfully!')
+    //     } catch (e) {
+    //         console.error('Error adding document: ', e)
+    //     }
+    // }
 
-    const handleEventDelete = ({ event }) => {
-        const index = events.findIndex((e) => e.id === event.id);
-        const newEvents = [...events];
-        newEvents.splice(index, 1);
-        setEvents(newEvents);
-    };
+    // addEvent(eventsList)
+    //     .then(() => {
+    //         console.log('Event added!')
+    //     })
+    //     .catch((error) => {
+    //         console.error('Error adding event: ', error)
+    //     })
 
     //Modal functions
     const [openModal, setOpenModal] = useState(false)
     const handleOpen = () => setOpenModal(true)
     const handleClose = () => setOpenModal(false)
-
-    const style = {
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 700,
-        bgcolor: 'background.paper',
-        border: '2px solid #000',
-        boxShadow: 24,
-        p: 4,
-    }
 
     const [meetPlat, setMeetPlat] = useState('')
     const handleMeetPlat = (event) => {
@@ -83,41 +73,24 @@ export default function Calendar() {
     }
 
     return (
-        <div className='w-full h-full px-5 mt-10'>
+        <div className='w-full h-full text-gray-800 p-5'>
             <FullCalendar
                 plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                 initialView='dayGridMonth'
                 headerToolbar={{
-                    start: 'today,dayGridDay,dayGridWeek,dayGridMonth', // will normally be on the left. if RTL, will be on the right
+                    start: 'today,dayGridMonth,dayGridWeek,dayGridDay', // will normally be on the left. if RTL, will be on the right
                     center: 'title',
                     end: 'prev,next' // will normally be on the right. if RTL, will be on the left
                 }}
-                events={events}
+                // events={eventsList}
                 weekends={true}
                 editable={true}
                 selectable={true}
                 selectMirror={true}
                 dayMaxEvents={true}
-                // select={(start, end) => {
-                //     const title = window.prompt('Event Title')
-                //     if (title) {
-                //         const newEvent = {
-                //             title,
-                //             start,
-                //             end
-                //         }
-                //         try {
-                //             console.log('New event:', newEvent)
-                //             handleEventAdd(newEvent)
-                //             // console.log('added successfully')
-                //         } catch (error) {
-                //             console.error('Failed to add new event:', error)
-                //         }
-                //     }
-                // }}
                 select={handleOpen}
-                eventChange={handleEventChange}
-                eventClick={handleEventDelete}
+                // eventChange={}
+                // eventClick={}
             />
 
             {/* <Button onClick={handleOpen}>Open modal</Button> */}
