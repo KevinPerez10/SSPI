@@ -8,7 +8,7 @@ import Menu from './components/pages/Menu'
 import { initializeApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
 import { useAuthState } from 'react-firebase-hooks/auth'
-import { getFirestore, collection, getDocs, addDoc, doc, writeBatch } from 'firebase/firestore'
+import { getFirestore } from 'firebase/firestore'
 
 const firebaseConfig = {
   apiKey: "AIzaSyCaxBPJsop8oCD8HnJAkfOkGrB7kUR6QaA",
@@ -27,56 +27,6 @@ export const auth = getAuth(app)
 
 //Firestore Database
 export const db = getFirestore(app)
-
-const eventsList = [
-  {
-    title: 'Event 1',
-    start: '2023-05-05T10:00:00',
-    end: '2023-05-05T12:00:00'
-  }
-]
-
-const addEvent = async (events) => {
-  try {
-      const batch = writeBatch(db)
-      events.forEach(event => {
-        const docRef = doc(collection(db, 'events'))
-        batch.set(docRef, {
-          title: event.title,
-          start: event.start,
-          end: event.end,
-          createdBy: auth.currentUser.uid
-        })
-      })
-      await batch.commit()
-      console.log('Events added successfully!')
-  } catch (e) {
-      console.error('Error adding events: ', e)
-  }
-}
-
-//ADD EVENT
-// addEvent(eventsList)
-//   .then(() => {
-//       console.log('Event added!')
-//   })
-//   .catch((error) => {
-//       console.error('Error adding events: ', error)
-//   })
-
-//TEST Add data to db
-// try {
-//   const docRef = await addDoc(collection(db, 'users'), {
-//     first: 'Alan',
-//     middle: 'Mathison',
-//     last: 'Turing',
-//     born: 1912
-//   })
-
-//   console.log('Document written: ', docRef.id)
-// } catch (e) {
-//   console.error('Error: ', e)
-// }
 
 //TEST Get data from db
 // const querySnapshot = await getDocs(collection(db, 'users'))

@@ -1,9 +1,13 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import dayjs from 'dayjs'
+import {collection, query, where, getDocs, doc, onSnapshot, writeBatch} from 'firebase/firestore'
+import {auth, db} from '../../../App'
 
 //material ui
 import {
     Modal,
+    Button,
+    Snackbar,
     Box, 
     Typography,
     TextField,
@@ -27,40 +31,73 @@ import '../../../App.css'
 export default function Calendar() {
     
     //FULLCALENDAR FUNCTIONS
-    // const eventsList = {
-    //     title: 'Event 1',
-    //     start: '2023-05-05T10:00:00',
-    //     end: '2023-05-05T12:00:00'
-    // }
+    const [eventsList, setEventsList] = useState([
+        {
+            title: '',
+            start: '',
+            end: ''
+        }
+    ])
 
-    // const eventsList = 
-    //     {
-    //         title: 'Event 1',
-    //         start: '2023-05-05T10:00:00',
-    //         end: '2023-05-05T12:00:00'
-    //     }
+    const [testEventsList, setTestEventsList] = useState([
+        {
+            title: 'Event 1',
+            start: '2023-05-10T10:00:00',
+            end: '2023-05-10T12:00:00'
+        }
+    ])
 
-    // const addEvent = async (event) => {
-    //     try {
-    //         await addDoc(collection(db, 'events'), {
-    //             title: event.title,
-    //             start: event.start,
-    //             end: event.end,
-    //             createdBy: auth.currentUser.uid
-    //         })
-    //         console.log('Event added successfully!')
-    //     } catch (e) {
-    //         console.error('Error adding document: ', e)
-    //     }
-    // }
+    //GET EVENT
+    const getEvent = async (userId) => {
+        try {
+            const eventsRef = collection(db, 'events')
+            const q = query(eventsRef, where('createdBy', '==', userId))
+            const querySnapshot = await getDocs(q)
+            const events = []
+            querySnapshot.forEach((doc) => {
+                const eventData = doc.data()
+                const event = {
+                    id: doc.id,
+                    title: eventData.title,
+                    start: eventData.start,
+                    end: eventData.end
+                }
+                events.push(event)
+            })
+            return events
+        } catch (error) {
+            console.error('Error Getting events: ', error)
+            return []
+        }
+    }
 
-    // addEvent(eventsList)
-    //     .then(() => {
-    //         console.log('Event added!')
-    //     })
-    //     .catch((error) => {
-    //         console.error('Error adding event: ', error)
-    //     })
+    useEffect(() => {
+        if (auth.currentUser) {
+            getEvent(auth.currentUser.uid).then((events) => {
+                setEventsList(events)
+            })
+        }
+    }, [auth.currentUser])
+
+    //ADD EVENT
+    const addEvent = async (events) => {
+        try {
+            const batch = writeBatch(db)
+            events.forEach(event => {
+                const docRef = doc(collection(db, 'events'))
+                batch.set(docRef, {
+                    title: event.title,
+                    start: event.start,
+                    end: event.end,
+                    createdBy: auth.currentUser.uid
+                })
+            })
+            await batch.commit()
+            console.log('Events added successfully!')
+        } catch (e) {
+            console.error('Error adding events: ', e)
+        }
+    }
 
     //Modal functions
     const [openModal, setOpenModal] = useState(false)
@@ -82,7 +119,7 @@ export default function Calendar() {
                     center: 'title',
                     end: 'prev,next' // will normally be on the right. if RTL, will be on the left
                 }}
-                // events={eventsList}
+                events={eventsList}
                 weekends={true}
                 editable={true}
                 selectable={true}
@@ -115,22 +152,36 @@ export default function Calendar() {
                                 label="Meeting Platform"
                                 onChange={handleMeetPlat}
                             >
-                                <MenuItem value={'Zoom wow'}>Zoom</MenuItem>
+                                <MenuItem value={'Zoom'}>Zoom</MenuItem>
                                 <MenuItem value={'Google Meet'}>Google Meet</MenuItem>
                                 <MenuItem value={'Microsoft Teams'}>Microsoft Teams</MenuItem>
                             </Select>
+                            <div className='flex justify-around sm:flex-row flex-col gap-3'>
+                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                    <TimePicker className='sm:w-1/2' defaultValue={dayjs(new Date())} />
+                                    <TimePicker className='sm:w-1/2' defaultValue={dayjs(new Date())} />
+                                </LocalizationProvider>
+                            </div>
                         </FormControl>
                     </div>
 
-                    <div className='flex justify-around sm:flex-row flex-col gap-3'>
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <TimePicker className='sm:w-1/2' defaultValue={dayjs(new Date())} />
-                            <TimePicker className='sm:w-1/2' defaultValue={dayjs(new Date())} />
-                        </LocalizationProvider>
+
+                    <div className='self-end'>
+                        <Button
+                            className='text-black'
+                            onClick={() => {
+                                addEvent(eventsList)
+                                handleClose()
+                            }}
+                            variant="contained"
+                            disabled={!meetPlat}>
+                                Add
+                        </Button>
                     </div>
                     
                 </Box>
             </Modal>
+            <Snackbar></Snackbar>
         </div>
     )
 }
