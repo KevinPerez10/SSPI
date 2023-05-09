@@ -28,12 +28,6 @@ export const auth = getAuth(app)
 //Firestore Database
 export const db = getFirestore(app)
 
-//TEST Get data from db
-// const querySnapshot = await getDocs(collection(db, 'users'))
-// querySnapshot.forEach((doc) => {
-//   console.log(`${doc.id} => ${doc.data()}`)
-// })
-
 function App() {
   const [user] = useAuthState(auth)
 

@@ -12,8 +12,6 @@ export default function SignIn() {
             const name = userCredential.user.displayName
             const profilePic = userCredential.user.photoURL
 
-            console.log(userCredential)
-
             localStorage.setItem('name', name)
             localStorage.setItem('profilePic', profilePic)
         }).catch((error) => {

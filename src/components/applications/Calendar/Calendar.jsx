@@ -1,6 +1,14 @@
 import React, {useEffect, useState} from 'react'
 import dayjs from 'dayjs'
-import {collection, query, where, getDocs, doc, onSnapshot, writeBatch} from 'firebase/firestore'
+import {
+    collection,
+    query,
+    where,
+    getDocs,
+    doc,
+    onSnapshot,
+    writeBatch
+} from 'firebase/firestore'
 import {auth, db} from '../../../App'
 
 //material ui
@@ -39,11 +47,12 @@ export default function Calendar() {
         }
     ])
 
-    const [testEventsList, setTestEventsList] = useState([
+    const [addEventsList, setAddEventsList] = useState([
         {
-            title: 'Event 1',
-            start: '2023-05-10T10:00:00',
-            end: '2023-05-10T12:00:00'
+            title: 'New Agenda',
+            start: '2023-05-11T10:00:00',
+            end: '2023-05-13T12:00:00',
+            meetingPlatform: 'Zoom'
         }
     ])
 
@@ -60,7 +69,9 @@ export default function Calendar() {
                     id: doc.id,
                     title: eventData.title,
                     start: eventData.start,
-                    end: eventData.end
+                    end: eventData.end,
+                    meetingPlatform: eventData.meetingPlatform,
+                    eventColor: eventColors[eventData.meetingPlatform]
                 }
                 events.push(event)
             })
@@ -89,14 +100,24 @@ export default function Calendar() {
                     title: event.title,
                     start: event.start,
                     end: event.end,
+                    meetingPlatform: event.meetingPlatform,
                     createdBy: auth.currentUser.uid
                 })
             })
             await batch.commit()
             console.log('Events added successfully!')
+            const newEvents = await getEvent(auth.currentUser.uid)
+            setEventsList(newEvents)
         } catch (e) {
             console.error('Error adding events: ', e)
         }
+    }
+
+    //Event Colors
+    const eventColors = {
+        zoom: 'blue',
+        googleMeet: 'green',
+        microsoftTeams: 'purple'
     }
 
     //Modal functions
@@ -120,6 +141,14 @@ export default function Calendar() {
                     end: 'prev,next' // will normally be on the right. if RTL, will be on the left
                 }}
                 events={eventsList}
+                // eventContent={(eventInfo) => {
+                //     const color = eventColors[eventInfo.event.extendedProps.meetingPlatform]
+                //     return (
+                //         <div style={{ backgroundColor: color }}>
+                //             {eventInfo.timeText} {eventInfo.event.title}
+                //         </div>
+                //     )
+                // }}
                 weekends={true}
                 editable={true}
                 selectable={true}
@@ -144,23 +173,46 @@ export default function Calendar() {
                         </Typography>
                         <TextField id="outlined-basic" label="Title" variant="outlined" />
                         <FormControl fullWidth>
-                            <InputLabel id="demo-simple-select-label">Meeting Platform</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                value={meetPlat}
-                                label="Meeting Platform"
-                                onChange={handleMeetPlat}
-                            >
-                                <MenuItem value={'Zoom'}>Zoom</MenuItem>
-                                <MenuItem value={'Google Meet'}>Google Meet</MenuItem>
-                                <MenuItem value={'Microsoft Teams'}>Microsoft Teams</MenuItem>
-                            </Select>
-                            <div className='flex justify-around sm:flex-row flex-col gap-3'>
-                                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                    <TimePicker className='sm:w-1/2' defaultValue={dayjs(new Date())} />
-                                    <TimePicker className='sm:w-1/2' defaultValue={dayjs(new Date())} />
-                                </LocalizationProvider>
+                            <div className='flex flex-col w-full gap-5'>
+                                <InputLabel id="demo-simple-select-label">Meeting Platform</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select"
+                                    value={meetPlat}
+                                    label="Meeting Platform"
+                                    onChange={handleMeetPlat}
+                                >
+                                    <MenuItem value={'Zoom'}>
+                                        <div className='flex items-center gap-2'>
+                                            <div className='grid place-items-center text-blue-500 text-2xl'>
+                                                <ion-icon name="videocam"></ion-icon>
+                                            </div>
+                                            <p>Zoom</p>
+                                        </div>
+                                    </MenuItem>
+                                    <MenuItem value={'Google Meet'}>
+                                        <div className='flex items-center gap-2'>
+                                            <div className='grid place-items-center text-green-600 text-2xl'>
+                                                <ion-icon name="logo-google"></ion-icon>
+                                            </div>
+                                            <p>Google Meet</p>
+                                        </div>
+                                    </MenuItem>
+                                    <MenuItem value={'Microsoft Teams'}>
+                                        <div className='flex items-center gap-2'>
+                                            <div className='grid place-items-center text-purple-600 text-2xl'>
+                                                <ion-icon name="people"></ion-icon>
+                                            </div>
+                                            <p>Microsoft Teams</p>
+                                        </div>
+                                    </MenuItem>
+                                </Select>
+                                <div className='flex justify-around sm:flex-row flex-col gap-3'>
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                        <TimePicker className='sm:w-1/2' defaultValue={dayjs(new Date())} />
+                                        <TimePicker className='sm:w-1/2' defaultValue={dayjs(new Date())} />
+                                    </LocalizationProvider>
+                                </div>
                             </div>
                         </FormControl>
                     </div>
@@ -170,7 +222,7 @@ export default function Calendar() {
                         <Button
                             className='text-black'
                             onClick={() => {
-                                addEvent(eventsList)
+                                addEvent(addEventsList)
                                 handleClose()
                             }}
                             variant="contained"
