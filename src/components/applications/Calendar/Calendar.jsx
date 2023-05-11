@@ -26,15 +26,35 @@ import {
 } from '@mui/material'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
-import { TimePicker } from '@mui/x-date-pickers/TimePicker'
+// import { TimePicker } from '@mui/x-date-pickers/TimePicker'
 
 //fullcalendar
-import FullCalendar from '@fullcalendar/react'
-import dayGridPlugin from '@fullcalendar/daygrid'
-import timeGridPlugin from '@fullcalendar/timegrid'
-import interactionPlugin from '@fullcalendar/interaction'
+// import FullCalendar from '@fullcalendar/react'
+// import dayGridPlugin from '@fullcalendar/daygrid'
+// import timeGridPlugin from '@fullcalendar/timegrid'
+// import interactionPlugin from '@fullcalendar/interaction'
+
+//syncfusion
+import { registerLicense } from '@syncfusion/ej2-base'
+import {
+    ScheduleComponent,
+    ViewsDirective,
+    ViewDirective,
+    Day,
+    Week,
+    WorkWeek,
+    Month,
+    Agenda,
+    Inject,
+    Resize,
+    DragAndDrop
+} from '@syncfusion/ej2-react-schedule'
+import { DatePickerComponent } from '@syncfusion/ej2-react-calendars'
+
 
 import '../../../App.css'
+
+registerLicense('Mgo+DSMBaFt+QHJqVk1hXk5Hd0BLVGpAblJ3T2ZQdVt5ZDU7a15RRnVfR1xiSX9QfkFjWnxdcQ==;Mgo+DSMBPh8sVXJ1S0R+X1pFdEBBXHxAd1p/VWJYdVt5flBPcDwsT3RfQF5jTH9SdkRgUXtec3JVRw==;ORg4AjUWIQA/Gnt2VFhiQlJPd11dXmJWd1p/THNYflR1fV9DaUwxOX1dQl9gSXtSd0ViWndacHddRmE=;MjAwMzU5N0AzMjMxMmUzMjJlMzNqQmRoOERPUnRSWS9sMlpHUHg5Q1VQRkdwV2k0QUxjcmlQVzVQUDRyTVBJPQ==;MjAwMzU5OEAzMjMxMmUzMjJlMzNFYy9acUFxM2ZlVGZJbjIya1lOU1libnVYM3VScEZhUWZtcGhqZWlSb1FFPQ==;NRAiBiAaIQQuGjN/V0d+Xk9HfV5AQmBIYVp/TGpJfl96cVxMZVVBJAtUQF1hSn5Wd0RjWHxWdHRQRmZd;MjAwMzYwMEAzMjMxMmUzMjJlMzNaekJ5dVV4NmZCcnFuVkZ4V0h6T1hhbVVVNUtRcnE0MTg5N1pKRDJXU0JnPQ==;MjAwMzYwMUAzMjMxMmUzMjJlMzNqQk1Udy8vdng5NnpOVXNacU9RbkpxWVM1NFl4VDdBaEFNVUt5Zzhicmx3PQ==;Mgo+DSMBMAY9C3t2VFhiQlJPd11dXmJWd1p/THNYflR1fV9DaUwxOX1dQl9gSXtSd0ViWndacHJUT2E=;MjAwMzYwM0AzMjMxMmUzMjJlMzNlbDJTUFE0cFNCdExkYkNXdjVqL1lJWGJqY2NlOWE2ZSt0dFB3U1FZOVBJPQ==;MjAwMzYwNEAzMjMxMmUzMjJlMzNaM0NZd1p5V3JYSmoxQjYwbFRlWEJ2UVNvMTlUVWZjTk5CdEpnelRVUk5ZPQ==;MjAwMzYwNUAzMjMxMmUzMjJlMzNaekJ5dVV4NmZCcnFuVkZ4V0h6T1hhbVVVNUtRcnE0MTg5N1pKRDJXU0JnPQ==')
 
 export default function Calendar() {
     
@@ -49,12 +69,19 @@ export default function Calendar() {
 
     const [addEventsList, setAddEventsList] = useState([
         {
-            title: 'New Agenda',
-            start: '2023-05-11T10:00:00',
-            end: '2023-05-13T12:00:00',
-            meetingPlatform: 'Zoom'
+            title: '',
+            start: '',
+            end: '',
+            meetingPlatform: ''
         }
     ])
+    const handleInputChange = (e) => {
+        const { name, value} = e.target
+        setAddEventsList(prevState => ({
+            ...prevState,
+            [name]: value
+        }))
+    }
 
     //GET EVENT
     const getEvent = async (userId) => {
@@ -70,8 +97,7 @@ export default function Calendar() {
                     title: eventData.title,
                     start: eventData.start,
                     end: eventData.end,
-                    meetingPlatform: eventData.meetingPlatform,
-                    eventColor: eventColors[eventData.meetingPlatform]
+                    meetingPlatform: eventData.meetingPlatform
                 }
                 events.push(event)
             })
@@ -113,12 +139,6 @@ export default function Calendar() {
         }
     }
 
-    //Event Colors
-    const eventColors = {
-        zoom: 'blue',
-        googleMeet: 'green',
-        microsoftTeams: 'purple'
-    }
 
     //Modal functions
     const [openModal, setOpenModal] = useState(false)
@@ -126,13 +146,10 @@ export default function Calendar() {
     const handleClose = () => setOpenModal(false)
 
     const [meetPlat, setMeetPlat] = useState('')
-    const handleMeetPlat = (event) => {
-        setMeetPlat(event.target.value)
-    }
 
     return (
         <div className='w-full h-full text-gray-800 p-5'>
-            <FullCalendar
+            {/* <FullCalendar
                 plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                 initialView='dayGridMonth'
                 headerToolbar={{
@@ -141,14 +158,6 @@ export default function Calendar() {
                     end: 'prev,next' // will normally be on the right. if RTL, will be on the left
                 }}
                 events={eventsList}
-                // eventContent={(eventInfo) => {
-                //     const color = eventColors[eventInfo.event.extendedProps.meetingPlatform]
-                //     return (
-                //         <div style={{ backgroundColor: color }}>
-                //             {eventInfo.timeText} {eventInfo.event.title}
-                //         </div>
-                //     )
-                // }}
                 weekends={true}
                 editable={true}
                 selectable={true}
@@ -158,8 +167,7 @@ export default function Calendar() {
                 // eventChange={}
                 // eventClick={}
             />
-
-            {/* <Button onClick={handleOpen}>Open modal</Button> */}
+            
             <Modal
             open={openModal}
             onClose={handleClose}
@@ -171,16 +179,24 @@ export default function Calendar() {
                         <Typography id="modal-modal-title" variant="h6" component="h2">
                             Add Event:
                         </Typography>
-                        <TextField id="outlined-basic" label="Title" variant="outlined" />
+                        <TextField
+                            id="outlined-basic"
+                            label="Title"
+                            variant="outlined"
+                            name='title'
+                            value={addEventsList.title}
+                            onChange={handleInputChange}
+                        />
                         <FormControl fullWidth>
                             <div className='flex flex-col w-full gap-5'>
                                 <InputLabel id="demo-simple-select-label">Meeting Platform</InputLabel>
                                 <Select
                                     labelId="demo-simple-select-label"
                                     id="demo-simple-select"
-                                    value={meetPlat}
+                                    value={addEventsList.meetingPlatform}
                                     label="Meeting Platform"
-                                    onChange={handleMeetPlat}
+                                    onChange={handleInputChange}
+                                    name='meetingPlatform'
                                 >
                                     <MenuItem value={'Zoom'}>
                                         <div className='flex items-center gap-2'>
@@ -209,8 +225,26 @@ export default function Calendar() {
                                 </Select>
                                 <div className='flex justify-around sm:flex-row flex-col gap-3'>
                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                        <TimePicker className='sm:w-1/2' defaultValue={dayjs(new Date())} />
-                                        <TimePicker className='sm:w-1/2' defaultValue={dayjs(new Date())} />
+                                        <TimePicker
+                                            className='sm:w-1/2'
+                                            label='Start'
+                                            value={addEventsList.start}
+                                            onChange={value => handleInputChange(
+                                                {
+                                                    target: { name: 'start', value}
+                                                }
+                                            )}
+                                        />
+                                        <TimePicker
+                                            className='sm:w-1/2'
+                                            label='End'
+                                            value={addEventsList.end}
+                                            onChange={value => handleInputChange(
+                                                {
+                                                    target: { name: 'end', value}
+                                                }
+                                            )}
+                                        />
                                     </LocalizationProvider>
                                 </div>
                             </div>
@@ -226,14 +260,29 @@ export default function Calendar() {
                                 handleClose()
                             }}
                             variant="contained"
-                            disabled={!meetPlat}>
+                            // disabled={!meetPlat}
+                        >
                                 Add
                         </Button>
                     </div>
                     
                 </Box>
             </Modal>
-            <Snackbar></Snackbar>
+            <Snackbar></Snackbar> */}
+            <link rel="stylesheet" href="https://cdn.syncfusion.com/ej2/material.css" />
+            <ScheduleComponent currentView='Month'>
+                <Inject
+                    services={[
+                        Day,
+                        Week,
+                        WorkWeek,
+                        Month,
+                        Agenda,
+                        Resize,
+                        DragAndDrop
+                    ]}
+                />
+            </ScheduleComponent>
         </div>
     )
 }
