@@ -75,6 +75,26 @@ export default function Calendar() {
             meetingPlatform: ''
         }
     ])
+
+    const scheduleData = [
+        {
+            Id: 1,
+            Subject: 'Explosion',
+            Location: 'USA',
+            StartTime: '2023-10-5T04:00:00.000Z',
+            EndTime: '2023-5-10T05:00:00.000Z',
+            CategoryColor: '#DF912E'
+        },
+        {
+            Id: 2,
+            Subject: 'Explosion',
+            Location: 'USA',
+            StartTime: '2023-5-12T04:00:00.000Z',
+            EndTime: '2023-5-12T05:00:00.000Z',
+            CategoryColor: '#DF912E'
+        }
+    ]
+
     const handleInputChange = (e) => {
         const { name, value} = e.target
         setAddEventsList(prevState => ({
@@ -82,6 +102,7 @@ export default function Calendar() {
             [name]: value
         }))
     }
+
 
     //GET EVENT
     const getEvent = async (userId) => {
@@ -269,8 +290,16 @@ export default function Calendar() {
                 </Box>
             </Modal>
             <Snackbar></Snackbar> */}
-            <link rel="stylesheet" href="https://cdn.syncfusion.com/ej2/material.css" />
-            <ScheduleComponent currentView='Month'>
+            <link rel="stylesheet" href="https://cdn.syncfusion.com/ej2/tailwind-dark.css" />
+            <ScheduleComponent
+                currentView='Month'
+                eventSettings={
+                    {
+                        dataSource: scheduleData
+                    }
+                }
+                selectedDate={new Date()}
+            >
                 <Inject
                     services={[
                         Day,

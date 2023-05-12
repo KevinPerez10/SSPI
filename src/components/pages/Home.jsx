@@ -13,9 +13,9 @@ export default function Home() {
                     Lorem ipsum, dolor sit amet consectetur adipisicing elit. Neque nulla necessitatibus dolor eius nemo aut culpa rerum tenetur deleniti hic.
                 </ul>
             </aside>
-            <section className='w-full flex flex-col items-center bg-slate-50 sm:rounded-2xl sm:m-5 sm:shadow-lg overflow-auto'>
+            {/* <section className=''> */}
                 <Calendar/>
-            </section>
+            {/* </section> */}
         </div>
     )
 }

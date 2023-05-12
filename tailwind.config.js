@@ -8,7 +8,8 @@ export default {
   theme: {
     extend: {
       colors: {
-        'sspi-yellow': '#DF912E'
+        'sspi-yellow': '#DF912E',
+        'calendar-current-day': '#DF912E'
       }
     },
     fontFamily: {
