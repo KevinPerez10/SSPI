@@ -76,24 +76,28 @@ export default function Calendar() {
         }
     ])
 
-    const scheduleData = [
+    //syncfusion dummy data
+    let scheduleData = [
         {
             Id: 1,
-            Subject: 'Explosion',
-            Location: 'USA',
+            Subject: 'nolasco',
             StartTime: '2023-10-5T04:00:00.000Z',
             EndTime: '2023-5-10T05:00:00.000Z',
+            MeetingPlatform: 'Zoom',
             CategoryColor: '#DF912E'
         },
         {
             Id: 2,
-            Subject: 'Explosion',
-            Location: 'USA',
+            Subject: 'czanel',
             StartTime: '2023-5-12T04:00:00.000Z',
             EndTime: '2023-5-12T05:00:00.000Z',
+            MeetingPlatform: 'Meet',
             CategoryColor: '#DF912E'
         }
     ]
+
+
+
 
     const handleInputChange = (e) => {
         const { name, value} = e.target
@@ -103,22 +107,21 @@ export default function Calendar() {
         }))
     }
 
-
     //GET EVENT
     const getEvent = async (userId) => {
         try {
             const eventsRef = collection(db, 'events')
-            const q = query(eventsRef, where('createdBy', '==', userId))
+            const q = query(eventsRef, where('CreatedBy', '==', userId))
             const querySnapshot = await getDocs(q)
             const events = []
             querySnapshot.forEach((doc) => {
                 const eventData = doc.data()
                 const event = {
-                    id: doc.id,
-                    title: eventData.title,
-                    start: eventData.start,
-                    end: eventData.end,
-                    meetingPlatform: eventData.meetingPlatform
+                    Id: doc.id,
+                    Subject: eventData.Subject,
+                    StartTime: eventData.StartTime,
+                    EndTime: eventData.EndTime,
+                    MeetingPlatform: eventData.MeetingPlatform
                 }
                 events.push(event)
             })
@@ -144,11 +147,12 @@ export default function Calendar() {
             events.forEach(event => {
                 const docRef = doc(collection(db, 'events'))
                 batch.set(docRef, {
-                    title: event.title,
-                    start: event.start,
-                    end: event.end,
-                    meetingPlatform: event.meetingPlatform,
-                    createdBy: auth.currentUser.uid
+                    Id: event.Id,
+                    Subject: event.Subject,
+                    StartTime: event.StartTime,
+                    EndTime: event.EndTime,
+                    MeetingPlatform: event.MeetingPlatform,
+                    CreatedBy: auth.currentUser.uid
                 })
             })
             await batch.commit()
@@ -293,11 +297,7 @@ export default function Calendar() {
             <link rel="stylesheet" href="https://cdn.syncfusion.com/ej2/tailwind-dark.css" />
             <ScheduleComponent
                 currentView='Month'
-                eventSettings={
-                    {
-                        dataSource: scheduleData
-                    }
-                }
+                dataSource={eventsList}
                 selectedDate={new Date()}
             >
                 <Inject
@@ -311,6 +311,17 @@ export default function Calendar() {
                         DragAndDrop
                     ]}
                 />
+                <div className='self-end'>
+                        <Button
+                            className='text-black'
+                            onClick={() => {
+                                addEvent(scheduleData)
+                            }}
+                            variant="contained"
+                        >
+                                Add
+                        </Button>
+                </div>
             </ScheduleComponent>
         </div>
     )
