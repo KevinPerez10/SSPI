@@ -53,6 +53,7 @@ import { DatePickerComponent } from '@syncfusion/ej2-react-calendars'
 
 
 import '../../../App.css'
+import { addContextMenuItems } from '@syncfusion/ej2/spreadsheet'
 
 registerLicense('Mgo+DSMBaFt+QHJqVk1hXk5Hd0BLVGpAblJ3T2ZQdVt5ZDU7a15RRnVfR1xiSX9QfkFjWnxdcQ==;Mgo+DSMBPh8sVXJ1S0R+X1pFdEBBXHxAd1p/VWJYdVt5flBPcDwsT3RfQF5jTH9SdkRgUXtec3JVRw==;ORg4AjUWIQA/Gnt2VFhiQlJPd11dXmJWd1p/THNYflR1fV9DaUwxOX1dQl9gSXtSd0ViWndacHddRmE=;MjAwMzU5N0AzMjMxMmUzMjJlMzNqQmRoOERPUnRSWS9sMlpHUHg5Q1VQRkdwV2k0QUxjcmlQVzVQUDRyTVBJPQ==;MjAwMzU5OEAzMjMxMmUzMjJlMzNFYy9acUFxM2ZlVGZJbjIya1lOU1libnVYM3VScEZhUWZtcGhqZWlSb1FFPQ==;NRAiBiAaIQQuGjN/V0d+Xk9HfV5AQmBIYVp/TGpJfl96cVxMZVVBJAtUQF1hSn5Wd0RjWHxWdHRQRmZd;MjAwMzYwMEAzMjMxMmUzMjJlMzNaekJ5dVV4NmZCcnFuVkZ4V0h6T1hhbVVVNUtRcnE0MTg5N1pKRDJXU0JnPQ==;MjAwMzYwMUAzMjMxMmUzMjJlMzNqQk1Udy8vdng5NnpOVXNacU9RbkpxWVM1NFl4VDdBaEFNVUt5Zzhicmx3PQ==;Mgo+DSMBMAY9C3t2VFhiQlJPd11dXmJWd1p/THNYflR1fV9DaUwxOX1dQl9gSXtSd0ViWndacHJUT2E=;MjAwMzYwM0AzMjMxMmUzMjJlMzNlbDJTUFE0cFNCdExkYkNXdjVqL1lJWGJqY2NlOWE2ZSt0dFB3U1FZOVBJPQ==;MjAwMzYwNEAzMjMxMmUzMjJlMzNaM0NZd1p5V3JYSmoxQjYwbFRlWEJ2UVNvMTlUVWZjTk5CdEpnelRVUk5ZPQ==;MjAwMzYwNUAzMjMxMmUzMjJlMzNaekJ5dVV4NmZCcnFuVkZ4V0h6T1hhbVVVNUtRcnE0MTg5N1pKRDJXU0JnPQ==')
 
@@ -141,17 +142,17 @@ export default function Calendar() {
     }, [auth.currentUser])
 
     //ADD EVENT
-    const addEvent = async (events) => {
+    const addEvent = async (event) => {
         try {
             const batch = writeBatch(db)
-            events.forEach(event => {
+            event.forEach(event => {
                 const docRef = doc(collection(db, 'events'))
                 batch.set(docRef, {
                     Id: event.Id,
                     Subject: event.Subject,
                     StartTime: event.StartTime,
                     EndTime: event.EndTime,
-                    MeetingPlatform: event.MeetingPlatform,
+                    // MeetingPlatform: event.MeetingPlatform,
                     CreatedBy: auth.currentUser.uid
                 })
             })
@@ -164,6 +165,14 @@ export default function Calendar() {
         }
     }
 
+    //ACTION COMPLETE HANDLER
+    const handleActionComplete = (args) => {
+        if (args.requestType === 'eventCreated') {
+            const newEvent = args.data[0]
+            addEvent([newEvent])
+            console.log([newEvent])
+        }
+    }
 
     //Modal functions
     const [openModal, setOpenModal] = useState(false)
@@ -294,10 +303,11 @@ export default function Calendar() {
                 </Box>
             </Modal>
             <Snackbar></Snackbar> */}
-            <link rel="stylesheet" href="https://cdn.syncfusion.com/ej2/tailwind.css" />
+            <link rel="stylesheet" href="https://cdn.syncfusion.com/ej2/tailwind-dark.css" />
             <ScheduleComponent
                 currentView='Month'
                 eventSettings={eventSettings}
+                actionComplete={handleActionComplete}
                 selectedDate={new Date()}
             >
                 <Inject
@@ -315,11 +325,12 @@ export default function Calendar() {
                         <Button
                             className='text-black'
                             onClick={() => {
-                                addEvent(scheduleData)
+                                // addEvent(scheduleData)
+                                console.log(scheduleData)
                             }}
                             variant="contained"
                         >
-                                Add
+                            Add
                         </Button>
                 </div>
             </ScheduleComponent>
