@@ -77,26 +77,26 @@ export default function Calendar() {
     ])
 
     //syncfusion dummy data
-    let scheduleData = [
+    const scheduleData = [
         {
-            Id: 1,
+            Id: '1',
             Subject: 'nolasco',
-            StartTime: '2023-10-5T04:00:00.000Z',
-            EndTime: '2023-5-10T05:00:00.000Z',
+            StartTime: new Date('2023-05-10T04:00:00.000Z'),
+            EndTime: new Date('2023-05-10T05:00:00.000Z'),
             MeetingPlatform: 'Zoom',
             CategoryColor: '#DF912E'
         },
         {
-            Id: 2,
+            Id: '2',
             Subject: 'czanel',
-            StartTime: '2023-5-12T04:00:00.000Z',
-            EndTime: '2023-5-12T05:00:00.000Z',
+            StartTime: new Date('2023-05-12T04:00:00.000Z'),
+            EndTime: new Date('2023-05-12T05:00:00.000Z'),
             MeetingPlatform: 'Meet',
             CategoryColor: '#DF912E'
         }
     ]
 
-
+    const eventSettings = { dataSource: scheduleData }
 
 
     const handleInputChange = (e) => {
@@ -294,10 +294,10 @@ export default function Calendar() {
                 </Box>
             </Modal>
             <Snackbar></Snackbar> */}
-            <link rel="stylesheet" href="https://cdn.syncfusion.com/ej2/tailwind-dark.css" />
+            <link rel="stylesheet" href="https://cdn.syncfusion.com/ej2/tailwind.css" />
             <ScheduleComponent
                 currentView='Month'
-                dataSource={eventsList}
+                eventSettings={eventSettings}
                 selectedDate={new Date()}
             >
                 <Inject
