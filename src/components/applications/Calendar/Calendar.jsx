@@ -59,23 +59,10 @@ registerLicense('Mgo+DSMBaFt+QHJqVk1hXk5Hd0BLVGpAblJ3T2ZQdVt5ZDU7a15RRnVfR1xiSX9
 
 export default function Calendar() {
     
-    //FULLCALENDAR FUNCTIONS
-    const [eventsList, setEventsList] = useState([
-        {
-            title: '',
-            start: '',
-            end: ''
-        }
-    ])
-
-    const [addEventsList, setAddEventsList] = useState([
-        {
-            title: '',
-            start: '',
-            end: '',
-            meetingPlatform: ''
-        }
-    ])
+    //DATA HOLDER
+    const [eventsList, setEventsList] = useState([])
+    // console.log(eventsList)
+    const [isDataLoaded, setIsDataLoaded] = useState([false])
 
     //syncfusion dummy data
     const scheduleData = [
@@ -97,7 +84,7 @@ export default function Calendar() {
         }
     ]
 
-    const eventSettings = { dataSource: scheduleData }
+    const eventSettings = { dataSource: eventsList }
 
 
     const handleInputChange = (e) => {
@@ -134,11 +121,15 @@ export default function Calendar() {
     }
 
     useEffect(() => {
-        if (auth.currentUser) {
-            getEvent(auth.currentUser.uid).then((events) => {
+        const fetchData = async() => {
+            if (auth.currentUser) {
+                const events = await getEvent(auth.currentUser.uid) 
                 setEventsList(events)
-            })
+                setIsDataLoaded(true)
+            }
         }
+
+        fetchData()
     }, [auth.currentUser])
 
     //ADD EVENT
@@ -183,157 +174,44 @@ export default function Calendar() {
 
     return (
         <div className='w-full h-full text-gray-800 p-5'>
-            {/* <FullCalendar
-                plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-                initialView='dayGridMonth'
-                headerToolbar={{
-                    start: 'today,dayGridMonth,dayGridWeek,dayGridDay', // will normally be on the left. if RTL, will be on the right
-                    center: 'title',
-                    end: 'prev,next' // will normally be on the right. if RTL, will be on the left
-                }}
-                events={eventsList}
-                weekends={true}
-                editable={true}
-                selectable={true}
-                selectMirror={true}
-                dayMaxEvents={true}
-                select={handleOpen}
-                // eventChange={}
-                // eventClick={}
-            />
-            
-            <Modal
-            open={openModal}
-            onClose={handleClose}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-            >
-                <Box className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4/5 bg-white rounded-lg shadow-lg p-5 flex flex-col justify-center gap-3'>
-                    <div className='flex flex-col gap-5'>
-                        <Typography id="modal-modal-title" variant="h6" component="h2">
-                            Add Event:
-                        </Typography>
-                        <TextField
-                            id="outlined-basic"
-                            label="Title"
-                            variant="outlined"
-                            name='title'
-                            value={addEventsList.title}
-                            onChange={handleInputChange}
-                        />
-                        <FormControl fullWidth>
-                            <div className='flex flex-col w-full gap-5'>
-                                <InputLabel id="demo-simple-select-label">Meeting Platform</InputLabel>
-                                <Select
-                                    labelId="demo-simple-select-label"
-                                    id="demo-simple-select"
-                                    value={addEventsList.meetingPlatform}
-                                    label="Meeting Platform"
-                                    onChange={handleInputChange}
-                                    name='meetingPlatform'
-                                >
-                                    <MenuItem value={'Zoom'}>
-                                        <div className='flex items-center gap-2'>
-                                            <div className='grid place-items-center text-blue-500 text-2xl'>
-                                                <ion-icon name="videocam"></ion-icon>
-                                            </div>
-                                            <p>Zoom</p>
-                                        </div>
-                                    </MenuItem>
-                                    <MenuItem value={'Google Meet'}>
-                                        <div className='flex items-center gap-2'>
-                                            <div className='grid place-items-center text-green-600 text-2xl'>
-                                                <ion-icon name="logo-google"></ion-icon>
-                                            </div>
-                                            <p>Google Meet</p>
-                                        </div>
-                                    </MenuItem>
-                                    <MenuItem value={'Microsoft Teams'}>
-                                        <div className='flex items-center gap-2'>
-                                            <div className='grid place-items-center text-purple-600 text-2xl'>
-                                                <ion-icon name="people"></ion-icon>
-                                            </div>
-                                            <p>Microsoft Teams</p>
-                                        </div>
-                                    </MenuItem>
-                                </Select>
-                                <div className='flex justify-around sm:flex-row flex-col gap-3'>
-                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                        <TimePicker
-                                            className='sm:w-1/2'
-                                            label='Start'
-                                            value={addEventsList.start}
-                                            onChange={value => handleInputChange(
-                                                {
-                                                    target: { name: 'start', value}
-                                                }
-                                            )}
-                                        />
-                                        <TimePicker
-                                            className='sm:w-1/2'
-                                            label='End'
-                                            value={addEventsList.end}
-                                            onChange={value => handleInputChange(
-                                                {
-                                                    target: { name: 'end', value}
-                                                }
-                                            )}
-                                        />
-                                    </LocalizationProvider>
-                                </div>
-                            </div>
-                        </FormControl>
-                    </div>
-
-
-                    <div className='self-end'>
-                        <Button
-                            className='text-black'
-                            onClick={() => {
-                                addEvent(addEventsList)
-                                handleClose()
-                            }}
-                            variant="contained"
-                            // disabled={!meetPlat}
-                        >
-                                Add
-                        </Button>
-                    </div>
-                    
-                </Box>
-            </Modal>
-            <Snackbar></Snackbar> */}
+            {/* <Snackbar></Snackbar> */}
             <link rel="stylesheet" href="https://cdn.syncfusion.com/ej2/tailwind-dark.css" />
-            <ScheduleComponent
-                currentView='Month'
-                eventSettings={eventSettings}
-                actionComplete={handleActionComplete}
-                selectedDate={new Date()}
-            >
-                <Inject
-                    services={[
-                        Day,
-                        Week,
-                        WorkWeek,
-                        Month,
-                        Agenda,
-                        Resize,
-                        DragAndDrop
-                    ]}
-                />
-                <div className='self-end'>
-                        <Button
-                            className='text-black'
-                            onClick={() => {
-                                // addEvent(scheduleData)
-                                console.log(scheduleData)
-                            }}
-                            variant="contained"
-                        >
-                            Add
-                        </Button>
+            {isDataLoaded ? (
+                <ScheduleComponent
+                    currentView='Month'
+                    eventSettings={eventSettings}
+                    actionComplete={handleActionComplete}
+                    selectedDate={new Date()}
+                >
+                    <Inject
+                        services={[
+                            Day,
+                            Week,
+                            WorkWeek,
+                            Month,
+                            Agenda,
+                            Resize,
+                            DragAndDrop
+                        ]}
+                    />
+                    <div className='self-end'>
+                            <Button
+                                className='text-black'
+                                onClick={() => {
+                                    // addEvent(scheduleData)
+                                    console.log(scheduleData)
+                                }}
+                                variant="contained"
+                            >
+                                Add
+                            </Button>
+                    </div>
+                </ScheduleComponent>
+            ) : (
+                <div>
+                    Loading...
                 </div>
-            </ScheduleComponent>
+            )}
         </div>
     )
 }
