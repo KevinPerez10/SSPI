@@ -12,7 +12,6 @@
   "dependencies": {
     "@emotion/react": "^11.10.8",
     "@emotion/styled": "^11.10.8",
-    "@fullcalendar/core": "^6.1.6",
     "@fullcalendar/daygrid": "^6.1.6",
     "@fullcalendar/interaction": "^6.1.6",
     "@fullcalendar/react": "^6.1.6",
@@ -21,6 +20,7 @@
     "@mui/x-date-pickers": "^6.3.0",
     "@syncfusion/ej2": "^21.2.4",
     "@syncfusion/ej2-base": "^21.2.3",
+    "@syncfusion/ej2-data": "^21.2.5",
     "@syncfusion/ej2-react-calendars": "^21.2.4",
     "@syncfusion/ej2-react-schedule": "^21.2.4",
     "dayjs": "^1.11.7",
