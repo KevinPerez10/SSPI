@@ -42,7 +42,6 @@ import {
     Resize,
     DragAndDrop
 } from '@syncfusion/ej2-react-schedule'
-import { DataManager } from '@syncfusion/ej2/data'
 import { DatePickerComponent } from '@syncfusion/ej2-react-calendars'
 
 
@@ -74,8 +73,8 @@ export default function Calendar() {
         {
             Id: '',
             Subject: 'Crylle',
-            StartTime: new Date('2023-05-19T04:00:00.000Z'),
-            EndTime: new Date('2023-05-20T04:00:00.000Z'),
+            StartTime: new Date('2023-05-17T04:00:00.000Z'),
+            EndTime: new Date('2023-05-19T04:00:00.000Z'),
             MeetingPlatform: 'Teams',
             CategoryColor: '#ffff'
         }
@@ -90,19 +89,21 @@ export default function Calendar() {
         try {
             const eventsRef = collection(db, 'events')
             const q = query(eventsRef, where('CreatedBy', '==', userId))
-            const querySnapshot = await getDocs(q)
-            const eventsData = querySnapshot.docs.map((doc) => {
-                const docData = doc.data()
-                const event = {
-                    Id: doc.id,
-                    ...docData,
-                    StartTime: docData.StartTime.toDate(),
-                    EndTime: docData.EndTime.toDate()
-                }
-                return event
+            const unsubscribe = onSnapshot(q, (querySnapshot) => {
+                const eventsData = querySnapshot.docs.map((doc) => {
+                    const docData = doc.data()
+                    const event = {
+                        Id: doc.id,
+                        ...docData,
+                        StartTime: docData.StartTime.toDate(),
+                        EndTime: docData.EndTime.toDate()
+                    }
+                    return event
+                })
+                setEventsList([...eventsData])
             })
-            setEventsList([...eventsData])
             setIsDataLoaded(true)
+            return unsubscribe
 
         } catch (error) {
             console.error('Error Getting events: ', error)
@@ -121,19 +122,21 @@ export default function Calendar() {
     //ADD EVENT
     const addEvent = async (event) => {
         try {
+            const eventsToAdd = Array.isArray(event) ? event : [event]
             const batch = writeBatch(db)
-            event.forEach(event => {
+            const newEvents = []
+            eventsToAdd.forEach((eventItem) => {
                 const docRef = doc(collection(db, 'events'))
                 const eventData = {
-                    ...event,
+                    ...eventItem,
                     CreatedBy: auth.currentUser.uid
                 }
                 batch.set(docRef, eventData)
+                newEvents.push(eventData)
             })
             await batch.commit()
             console.log('Events added successfully!')
-            const newEvents = await getEvent(auth.currentUser.uid)
-            setEventsList(newEvents)
+            setEventsList((prevEvents) => [...prevEvents, ...newEvents])
         } catch (e) {
             console.error('Error adding events: ', e)
         }
@@ -159,10 +162,9 @@ export default function Calendar() {
     return (
         <div className='w-full h-full text-gray-800 p-5'>
             {/* <Snackbar></Snackbar> */}
-            <link rel="stylesheet" href="https://cdn.syncfusion.com/ej2/tailwind-dark.css" />
             {isDataLoaded ? (
-                    <ScheduleComponent
-                        currentView='Month'
+                <ScheduleComponent
+                currentView='Month'
                         eventSettings={
                             {
                                 dataSource: eventsList
@@ -183,6 +185,7 @@ export default function Calendar() {
                                 DragAndDrop
                             ]}
                         />
+                        <link rel="stylesheet" href="https://cdn.syncfusion.com/ej2/tailwind-dark.css" />
                         <div className='self-end'>
                                 <Button
                                     className='text-black'
