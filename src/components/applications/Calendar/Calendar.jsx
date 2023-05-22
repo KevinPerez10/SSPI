@@ -4,10 +4,12 @@ import {
     collection,
     query,
     where,
-    getDocs,
     doc,
     onSnapshot,
-    writeBatch
+    writeBatch,
+    deleteDoc,
+    Firestore,
+    getDocs
 } from 'firebase/firestore'
 import {auth, db} from '../../../App'
 
@@ -145,15 +147,47 @@ export default function Calendar() {
         }
     }
 
+    //DELETE EVENT
+    const deleteEvent = async (eventId) => {
+        try {
+            console.log('Deleting event: ', eventId)
+            const docRef = doc(db,'events', eventId)
+            console.log('Event from db: ', docRef)
+            await deleteDoc(docRef)
+            console.log('Event deleted successfully')
+        } catch (error) {
+            console.error('Error deleting event: ', error)
+        }
+    }
+
     //ACTION COMPLETE HANDLER
-    const handleActionComplete = (args) => {
+    const handleActionComplete = async (args) => {
         if (args.requestType === 'eventCreated' && args.data) {
             const createdEvent = args.data[0]
             addEvent(createdEvent)
-            // console.log(args)
+        } else if (args.requestType === 'eventRemoved' && args.data) {
+            const removedEvent = args.data[0]
+
+            try{
+                const docRef = collection(db, 'events')
+                const q = query(docRef,
+                    where('Subject', '==', removedEvent.Subject)
+                )
+                const querySnapshot = await getDocs(q)
+
+                querySnapshot.forEach(async (doc) => {
+                    const docId = doc.id
+                    await deleteEvent(docId)
+                })
+
+            } catch (error) {
+                console.log('Error deleting event: ', error)
+            }
         }
-        // console.log(args)
     }
+
+    //EVENT SETTINGS
+    const eventSettings = { dataSource: eventsList }
 
     //Modal functions
     const [openModal, setOpenModal] = useState(false)
@@ -168,22 +202,7 @@ export default function Calendar() {
             {isDataLoaded ? (
                 <ScheduleComponent
                 currentView='Month'
-                        eventSettings={
-                            {
-                                dataSource: eventsList,
-                                fields: {
-                                    subject: {
-                                        name: 'Subject', validation: { required: true }
-                                    },
-                                    location: {
-                                        name: 'Location', validation: { required: true }
-                                    },
-                                    description: {
-                                        name: 'Description', validation: { required: true }
-                                    }
-                                }
-                            }
-                        }
+                        eventSettings={eventSettings}
                         actionComplete={handleActionComplete}
                         selectedDate={new Date()}
                     >
@@ -199,11 +218,10 @@ export default function Calendar() {
                             ]}
                         />
                         <link rel="stylesheet" href="https://cdn.syncfusion.com/ej2/tailwind-dark.css" />
-                        {/* <div className='self-end'>
+                        <div className='self-end'>
                                 <Button
                                     className='text-black'
                                     onClick={() => {
-                                        // addEvent(scheduleData)
                                         // console.log(eventsList)
                                         // console.log(scheduleData)
                                     }}
@@ -211,7 +229,7 @@ export default function Calendar() {
                                 >
                                     Add
                                 </Button>
-                        </div> */}
+                        </div>
                     </ScheduleComponent>
             ) : (
                 <div className='text-white'>
