@@ -136,7 +136,10 @@ export default function Calendar() {
             })
             await batch.commit()
             console.log('Events added successfully!')
-            setEventsList((prevEvents) => [...prevEvents, ...newEvents])
+            setEventsList((prevState) => {
+                const uniqueEvents = Array.from(new Set([...prevState, ...newEvents.map((event) => event.Id)]))
+                return uniqueEvents.map((eventId) => newEvents.find((event) => event.Id === eventId))
+            })
         } catch (e) {
             console.error('Error adding events: ', e)
         }
@@ -144,11 +147,11 @@ export default function Calendar() {
 
     //ACTION COMPLETE HANDLER
     const handleActionComplete = (args) => {
-        // if (args.requestType === 'eventCreated') {
-        //     const newEvent = args.data[0]
-        //     addEvent([newEvent])
-        //     console.log([newEvent])
-        // }
+        if (args.requestType === 'eventCreated' && args.data) {
+            const createdEvent = args.data[0]
+            addEvent(createdEvent)
+            // console.log(args)
+        }
         // console.log(args)
     }
 
@@ -167,8 +170,18 @@ export default function Calendar() {
                 currentView='Month'
                         eventSettings={
                             {
-                                dataSource: eventsList
-                                // dataSource: scheduleData
+                                dataSource: eventsList,
+                                fields: {
+                                    subject: {
+                                        name: 'Subject', validation: { required: true }
+                                    },
+                                    location: {
+                                        name: 'Location', validation: { required: true }
+                                    },
+                                    description: {
+                                        name: 'Description', validation: { required: true }
+                                    }
+                                }
                             }
                         }
                         actionComplete={handleActionComplete}
@@ -186,11 +199,11 @@ export default function Calendar() {
                             ]}
                         />
                         <link rel="stylesheet" href="https://cdn.syncfusion.com/ej2/tailwind-dark.css" />
-                        <div className='self-end'>
+                        {/* <div className='self-end'>
                                 <Button
                                     className='text-black'
                                     onClick={() => {
-                                        addEvent(scheduleData)
+                                        // addEvent(scheduleData)
                                         // console.log(eventsList)
                                         // console.log(scheduleData)
                                     }}
@@ -198,7 +211,7 @@ export default function Calendar() {
                                 >
                                     Add
                                 </Button>
-                        </div>
+                        </div> */}
                     </ScheduleComponent>
             ) : (
                 <div className='text-white'>
