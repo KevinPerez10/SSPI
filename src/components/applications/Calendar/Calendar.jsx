@@ -8,6 +8,7 @@ import {
     onSnapshot,
     writeBatch,
     deleteDoc,
+    updateDoc,
     Firestore,
     getDocs
 } from 'firebase/firestore'
@@ -49,6 +50,8 @@ import { DatePickerComponent } from '@syncfusion/ej2-react-calendars'
 
 import '../../../App.css'
 import { addContextMenuItems } from '@syncfusion/ej2/spreadsheet'
+import { update } from '@syncfusion/ej2/inplace-editor'
+import { change } from '@syncfusion/ej2/grids'
 
 registerLicense('Mgo+DSMBaFt+QHJqVk1hXk5Hd0BLVGpAblJ3T2ZQdVt5ZDU7a15RRnVfR1xiSX9QfkFjWnxdcQ==;Mgo+DSMBPh8sVXJ1S0R+X1pFdEBBXHxAd1p/VWJYdVt5flBPcDwsT3RfQF5jTH9SdkRgUXtec3JVRw==;ORg4AjUWIQA/Gnt2VFhiQlJPd11dXmJWd1p/THNYflR1fV9DaUwxOX1dQl9gSXtSd0ViWndacHddRmE=;MjAwMzU5N0AzMjMxMmUzMjJlMzNqQmRoOERPUnRSWS9sMlpHUHg5Q1VQRkdwV2k0QUxjcmlQVzVQUDRyTVBJPQ==;MjAwMzU5OEAzMjMxMmUzMjJlMzNFYy9acUFxM2ZlVGZJbjIya1lOU1libnVYM3VScEZhUWZtcGhqZWlSb1FFPQ==;NRAiBiAaIQQuGjN/V0d+Xk9HfV5AQmBIYVp/TGpJfl96cVxMZVVBJAtUQF1hSn5Wd0RjWHxWdHRQRmZd;MjAwMzYwMEAzMjMxMmUzMjJlMzNaekJ5dVV4NmZCcnFuVkZ4V0h6T1hhbVVVNUtRcnE0MTg5N1pKRDJXU0JnPQ==;MjAwMzYwMUAzMjMxMmUzMjJlMzNqQk1Udy8vdng5NnpOVXNacU9RbkpxWVM1NFl4VDdBaEFNVUt5Zzhicmx3PQ==;Mgo+DSMBMAY9C3t2VFhiQlJPd11dXmJWd1p/THNYflR1fV9DaUwxOX1dQl9gSXtSd0ViWndacHJUT2E=;MjAwMzYwM0AzMjMxMmUzMjJlMzNlbDJTUFE0cFNCdExkYkNXdjVqL1lJWGJqY2NlOWE2ZSt0dFB3U1FZOVBJPQ==;MjAwMzYwNEAzMjMxMmUzMjJlMzNaM0NZd1p5V3JYSmoxQjYwbFRlWEJ2UVNvMTlUVWZjTk5CdEpnelRVUk5ZPQ==;MjAwMzYwNUAzMjMxMmUzMjJlMzNaekJ5dVV4NmZCcnFuVkZ4V0h6T1hhbVVVNUtRcnE0MTg5N1pKRDJXU0JnPQ==')
 
@@ -138,10 +141,6 @@ export default function Calendar() {
             })
             await batch.commit()
             console.log('Events added successfully!')
-            setEventsList((prevState) => {
-                const uniqueEvents = Array.from(new Set([...prevState, ...newEvents.map((event) => event.Id)]))
-                return uniqueEvents.map((eventId) => newEvents.find((event) => event.Id === eventId))
-            })
         } catch (e) {
             console.error('Error adding events: ', e)
         }
@@ -160,12 +159,35 @@ export default function Calendar() {
         }
     }
 
+    //UPDATE EVENT
+    const updateEvent = async (updatedEvent) => {
+        try {
+            const eventsCollectionRef = collection(db, 'events')
+            const q = query(
+                eventsCollectionRef,
+                where('Id', '==', updatedEvent.Id)
+            )
+            const querySnapshot = await getDocs(q)
+
+            querySnapshot.forEach(async (snapshot) => {
+                const docId = snapshot.id
+                const docRef = doc(db, 'events', docId)
+                await updateDoc(docRef, updatedEvent)
+                console.log('Event updated successfully!')
+            })
+        } catch (error) {
+            console.error('Error updating event: ', error)
+        }
+    }
+
     //ACTION COMPLETE HANDLER
     const handleActionComplete = async (args) => {
         if (args.requestType === 'eventCreated' && args.data) {
             const createdEvent = args.data[0]
             addEvent(createdEvent)
-        } else if (args.requestType === 'eventRemoved' && args.data) {
+        }
+        
+        else if (args.requestType === 'eventRemoved' && args.data) {
             const removedEvent = args.data[0]
 
             try{
@@ -183,6 +205,12 @@ export default function Calendar() {
             } catch (error) {
                 console.log('Error deleting event: ', error)
             }
+        }
+        
+        else if (args.requestType === 'eventChanged' && args.data) {
+            const changedEvent = args.data[0]
+            console.log(changedEvent)
+            updateEvent(changedEvent)
         }
     }
 
@@ -218,7 +246,7 @@ export default function Calendar() {
                             ]}
                         />
                         <link rel="stylesheet" href="https://cdn.syncfusion.com/ej2/tailwind-dark.css" />
-                        <div className='self-end'>
+                        {/* <div className='self-end'>
                                 <Button
                                     className='text-black'
                                     onClick={() => {
@@ -229,7 +257,7 @@ export default function Calendar() {
                                 >
                                     Add
                                 </Button>
-                        </div>
+                        </div> */}
                     </ScheduleComponent>
             ) : (
                 <div className='text-white'>
