@@ -34,27 +34,29 @@ function App() {
   return (
     <div className='bg-gray-700 text-sspi-yellow h-screen w-full flex justify-center items-center'>
       <main className='h-full w-full flex flex-col items-center justify-center'>
-        <section className='bg-gray-800 w-full'>
-          {user ?
-            <div className='text-sspi-yellow flex items-center justify-center mx-3 my-2 gap-2'>
-              <div>
-                <Menu/>
+        <section className='bg-gray-800 grid place-items-center w-full'>
+          <div className='md:w-4/5 w-full'>
+            {user ?
+              <div className='text-sspi-yellow flex items-center justify-center mx-3 my-2 gap-2'>
+                <div>
+                  <Menu/>
+                </div>
+                <div className='font-gilmer mr-auto'>
+                  SSPI
+                </div>
+                <p>
+                  Hello, {localStorage.getItem('name')}!
+                </p>
+                <div className=''>
+                  <img className='rounded-full w-10' src={localStorage.getItem('profilePic')} alt="" />
+                </div>
+                <div>
+                  <SignOut/>
+                </div>
               </div>
-              <div className='font-gilmer mr-auto'>
-                SSPI
-              </div>
-              <p>
-                Hello, {localStorage.getItem('name')}!
-              </p>
-              <div className=''>
-                <img className='rounded-full w-10' src={localStorage.getItem('profilePic')} alt="" />
-              </div>
-              <div>
-                <SignOut/>
-              </div>
-            </div>
-          : null
-          }
+            : null
+            }
+          </div>
         </section>
         
         {user ? <Home/> : <SignIn/>}

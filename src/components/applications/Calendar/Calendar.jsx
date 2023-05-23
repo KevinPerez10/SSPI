@@ -31,11 +31,11 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 //syncfusion
-import { registerLicense } from '@syncfusion/ej2-base'
+import { registerLicense, extend, createElement } from '@syncfusion/ej2-base'
 import {
     ScheduleComponent,
-    ViewsDirective,
-    ViewDirective,
+    // ViewsDirective,
+    // ViewDirective,
     Day,
     Week,
     WorkWeek,
@@ -45,10 +45,12 @@ import {
     Resize,
     DragAndDrop
 } from '@syncfusion/ej2-react-schedule'
-import { DatePickerComponent } from '@syncfusion/ej2-react-calendars'
+import { DropDownList } from '@syncfusion/ej2-react-dropdowns'
+import { DateTimePicker } from '@syncfusion/ej2/calendars'
 
 
 import '../../../App.css'
+import '@syncfusion/ej2/tailwind-dark.css'
 import { addContextMenuItems } from '@syncfusion/ej2/spreadsheet'
 import { update } from '@syncfusion/ej2/inplace-editor'
 import { change } from '@syncfusion/ej2/grids'
@@ -214,26 +216,49 @@ export default function Calendar() {
         }
     }
 
+    
+    //Meeting Platform Logic
+    const meetingPlatforms = ['Zoom', 'Google Meet', 'Microsoft Teams']
+    
+    const EditorTemplate = (props) => {
+        const { rowData, field, type, element, value, setValue } = props
+        
+        if (field === 'EventType') {
+            return element
+        }
+
+        // if (field ===)
+
+        return (
+            <div>
+                <label htmlFor={field}>{field}</label>
+                <input
+                    id={field}
+                    type={type}
+                    value={value || ''}
+                    onChange={(e) => setValue(e.target.value)}
+                />
+            </div>
+        )
+    }
+
     //EVENT SETTINGS
-    const eventSettings = { dataSource: eventsList }
-
-    //Modal functions
-    const [openModal, setOpenModal] = useState(false)
-    const handleOpen = () => setOpenModal(true)
-    const handleClose = () => setOpenModal(false)
-
-    const [meetPlat, setMeetPlat] = useState('')
+    const eventSettings = {
+        dataSource: eventsList
+    }
 
     return (
         <div className='w-full h-full text-gray-800 p-5'>
             {/* <Snackbar></Snackbar> */}
             {isDataLoaded ? (
                 <ScheduleComponent
-                currentView='Month'
+                        currentView='Month'
                         eventSettings={eventSettings}
+                        // editorTemplate={EditorTemplate}
                         actionComplete={handleActionComplete}
                         selectedDate={new Date()}
                     >
+                        {/* <link rel="stylesheet" href="https://cdn.syncfusion.com/ej2/tailwind.css" /> */}
                         <Inject
                             services={[
                                 Day,
@@ -245,7 +270,6 @@ export default function Calendar() {
                                 DragAndDrop
                             ]}
                         />
-                        <link rel="stylesheet" href="https://cdn.syncfusion.com/ej2/tailwind-dark.css" />
                         {/* <div className='self-end'>
                                 <Button
                                     className='text-black'
